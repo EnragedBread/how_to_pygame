@@ -1,0 +1,12 @@
+#test artifacts
+.pytest_cache
+
+#build artifacts
+__pycache__/
+
+#game data
+wordlists/*
+!wordlists/default.txt
+
+#system artifacts
+.DS_Store
