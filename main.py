@@ -1,13 +1,14 @@
 import pygame
-from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_w, K_s, K_a, K_d
+from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_w, K_s, K_a, K_d, RLEACCEL
 
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 
 class Player():
     def __init__(self):
-        self.surf = pygame.Surface((100, 40))
-        self.surf.fill(pygame.Color('blue'))
+        #self.surf = pygame.image.load('player_1.png')
+        #self.surf.set_colorkey(pygame.Color('white'), RLEACCEL)
+        self.surf =  pygame.image.load('player_2.png').convert()
         self.rect = self.surf.get_rect()
         self.speed = 5
 
