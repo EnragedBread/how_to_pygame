@@ -6,9 +6,10 @@ SCREEN_HEIGHT = 480
 
 class Player():
     def __init__(self):
-        #self.surf = pygame.image.load('player_1.png')
-        #self.surf.set_colorkey(pygame.Color('white'), RLEACCEL)
-        self.surf =  pygame.image.load('player_2.png').convert()
+        self.surf = pygame.image.load('player_1.png')
+        self.surf.set_colorkey(pygame.Color('white'), RLEACCEL)
+        #use for custom no transparent background image
+        #self.surf =  pygame.image.load('yourimagehere.png').convert()
         self.rect = self.surf.get_rect()
         self.speed = 5
 
