@@ -1,4 +1,5 @@
 import random
+import time
 
 import pygame
 from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_w, K_s, K_a, K_d, RLEACCEL
@@ -29,13 +30,19 @@ class Enemy(pygame.sprite.Sprite):
         if self.rect.top > SCREEN_HEIGHT:
             self.kill()
 
-class Player():
+class Player(pygame.sprite.Sprite):
     def __init__(self):
+        super().__init__()
         self.surf = pygame.image.load('player_1.png')
         self.surf.set_colorkey(pygame.Color('white'), RLEACCEL)
         #use for custom no transparent background image
         #self.surf = pygame.image.load('yourimagehere.png').convert()
-        self.rect = self.surf.get_rect()
+        self.rect = self.surf.get_rect(
+            center = (
+                (SCREEN_WIDTH - self.surf.get_width()) // 2,
+                SCREEN_HEIGHT - (self.surf.get_height() // 2)
+            )
+        )
         self.speed = 5
 
     def render(self, screen):
@@ -73,6 +80,8 @@ pygame.time.set_timer(ADDENEMY, 250)
 
 player = Player()
 enemies = pygame.sprite.Group()
+all_sprites = pygame.sprite.Group()
+all_sprites.add(player)
 
 running = True
 while running:
@@ -84,15 +93,21 @@ while running:
         elif event.type == ADDENEMY:
             new_enemy = Enemy()
             enemies.add(new_enemy)
+            all_sprites.add(new_enemy)
     pressed_keys = pygame.key.get_pressed()
 
     player.update(pressed_keys)
     enemies.update()
 
     screen.fill(pygame.Color('lightgrey'))
-    player.render(screen)
-    for enemy in enemies:
-        enemy.render(screen)
+    for entity in all_sprites:
+        entity.render(screen)
+
     pygame.display.flip()
+
+    if pygame.sprite.spritecollideany(player, enemies):
+        time.sleep(2)
+        player.kill()
+        running = False
 
     clock.tick(60)
