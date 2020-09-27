@@ -7,6 +7,13 @@ from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_w, K_s, K_a, K_d, RLEACCEL
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 
+def hitbox_collision(player, entity):
+    hitbox = player.hitbox
+    rect = entity.rect
+    if (rect.x + rect.width) > hitbox[0] and rect.x < (hitbox[0] + hitbox[2]):
+        if (rect.y + rect.height) > hitbox[1] and rect.y < (hitbox[1] + hitbox[3]):
+            return True
+
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -33,8 +40,9 @@ class Enemy(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.surf = pygame.image.load('player_1.png')
+        self.surf = pygame.image.load('player_1.png').convert()
         self.surf.set_colorkey(pygame.Color('white'), RLEACCEL)
+        print(f"color key = {self.surf.get_colorkey()}")
         #use for custom no transparent background image
         #self.surf = pygame.image.load('yourimagehere.png').convert()
         self.rect = self.surf.get_rect(
@@ -44,9 +52,11 @@ class Player(pygame.sprite.Sprite):
             )
         )
         self.speed = 5
+        self.hitbox = pygame.Rect(self.rect.x + 10, self.rect.y + 10, self.rect.width - 20, self.rect.height -  20)
 
     def render(self, screen):
         screen.blit(self.surf, self.rect)
+        #pygame.draw.rect(screen, pygame.Color('yellow'), self.hitbox, 2)
 
     def handle_event(self, event):
         pass
@@ -69,6 +79,8 @@ class Player(pygame.sprite.Sprite):
             self.rect.top = 0
         elif self.rect.bottom > SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
+
+        self.hitbox = pygame.Rect(self.rect.x + 10, self.rect.y + 10, self.rect.width - 20, self.rect.height -  20)
 
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -105,7 +117,7 @@ while running:
 
     pygame.display.flip()
 
-    if pygame.sprite.spritecollideany(player, enemies):
+    if pygame.sprite.spritecollideany(player, enemies, hitbox_collision):
         time.sleep(2)
         player.kill()
         running = False
