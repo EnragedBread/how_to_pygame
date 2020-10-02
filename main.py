@@ -2,7 +2,7 @@ import random
 import time
 
 import pygame
-from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_w, K_s, K_a, K_d, RLEACCEL
+from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_w, K_s, K_a, K_d, K_SPACE, RLEACCEL
 
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
@@ -42,43 +42,56 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.surf = pygame.image.load('player_1.png').convert()
         self.surf.set_colorkey(pygame.Color('white'), RLEACCEL)
-        print(f"color key = {self.surf.get_colorkey()}")
-        #use for custom no transparent background image
-        #self.surf = pygame.image.load('yourimagehere.png').convert()
         self.rect = self.surf.get_rect(
             center = (
                 (SCREEN_WIDTH - self.surf.get_width()) // 2,
                 SCREEN_HEIGHT - (self.surf.get_height() // 2)
             )
         )
-        self.speed = 5
+        self.speed_x = 0
+        self.speed_y = 0
+        self.jumping = False
+        self.gravity = 5
         self.hitbox = pygame.Rect(self.rect.x + 10, self.rect.y + 10, self.rect.width - 20, self.rect.height -  20)
 
     def render(self, screen):
         screen.blit(self.surf, self.rect)
         #pygame.draw.rect(screen, pygame.Color('yellow'), self.hitbox, 2)
 
-    def handle_event(self, event):
-        pass
+    def handle_keys(self, keys):
+        #if keys[K_w]:
+            #self.rect.move_ip(0, -self.speed)
+        #elif keys[K_s]:
+            #self.rect.move_ip(0, self.speed)
+        if not self.jumping:
+            if keys[K_a]:
+                self.speed_x = -10
+            elif keys[K_d]:
+                self.speed_x = 10
+            elif keys[K_SPACE]:
+                self.jumping = True
+                self.speed_y = -50
+            else:
+                self.speed_x = 0
 
-    def update(self, keys):
-        if keys[K_w]:
-            self.rect.move_ip(0, -self.speed)
-        elif keys[K_s]:
-            self.rect.move_ip(0, self.speed)
-        elif keys[K_a]:
-            self.rect.move_ip(-self.speed, 0)
-        elif keys[K_d]:
-            self.rect.move_ip(self.speed, 0)
+        if self.jumping:
+            self.speed_y += self.gravity
 
-        if self.rect.left < 0:
+    def update(self):
+        self.rect.move_ip(self.speed_x, self.speed_y)
+
+        if self.rect.left <= 0:
             self.rect.left = 0
-        elif self.rect.right > SCREEN_WIDTH:
+            self.speed_x = 0
+        if self.rect.right >= SCREEN_WIDTH:
             self.rect.right = SCREEN_WIDTH
-        elif self.rect.top < 0:
+            self.speed_x = 0
+        if self.rect.top <= 0:
             self.rect.top = 0
-        elif self.rect.bottom > SCREEN_HEIGHT:
+        if self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
+            self.jumping = False
+            self.speed_y = 0
 
         self.hitbox = pygame.Rect(self.rect.x + 10, self.rect.y + 10, self.rect.width - 20, self.rect.height -  20)
 
@@ -108,7 +121,8 @@ while running:
             all_sprites.add(new_enemy)
     pressed_keys = pygame.key.get_pressed()
 
-    player.update(pressed_keys)
+    player.handle_keys(pressed_keys)
+    player.update()
     enemies.update()
 
     screen.fill(pygame.Color('lightgrey'))
