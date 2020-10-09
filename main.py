@@ -2,7 +2,7 @@ import random
 import time
 
 import pygame
-from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_w, K_s, K_a, K_d, K_SPACE, RLEACCEL
+from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_w, K_s, K_a, K_d, K_SPACE, K_LEFT, K_RIGHT, RLEACCEL
 
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
@@ -14,7 +14,7 @@ def hitbox_collision(player, entity):
         if (rect.y + rect.height) > hitbox[1] and rect.y < (hitbox[1] + hitbox[3]):
             return True
 
-class Enemy(pygame.sprite.Sprite):
+class Raindrop(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
 
@@ -36,6 +36,25 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.move_ip(0, self.speed)
         if self.rect.top > SCREEN_HEIGHT:
             self.kill()
+
+class Puddle(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+
+        self.surf = pygame.Surface((60,20))
+        self.color = pygame.Color('navy')
+        self.surf.fill(self.color)
+        self.rect = self.surf.get_rect()
+        self.rect.bottomleft = (SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.speed = -5
+
+    def render(self, screen):
+        screen.blit(self.surf, self.rect)
+
+    def update(self):
+        self.rect.move_ip(self.speed, 0)
+        if self.rect.right <= 0:
+            self.rect.left = SCREEN_WIDTH
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -63,35 +82,32 @@ class Player(pygame.sprite.Sprite):
             #self.rect.move_ip(0, -self.speed)
         #elif keys[K_s]:
             #self.rect.move_ip(0, self.speed)
-        if not self.jumping:
-            if keys[K_a]:
-                self.speed_x = -10
-            elif keys[K_d]:
-                self.speed_x = 10
-            elif keys[K_SPACE]:
-                self.jumping = True
-                self.speed_y = -50
-            else:
-                self.speed_x = 0
 
-        if self.jumping:
-            self.speed_y += self.gravity
+        if keys[K_a] or keys[K_LEFT]:
+            self.speed_x = -10
+        elif keys[K_d] or keys[K_RIGHT]:
+            self.speed_x = 10
+        else:
+            self.speed_x = 0
+        if (keys[K_SPACE] or keys[K_w]) and not self.jumping:
+            self.jumping = True
+            self.speed_y = -50
+
+        self.speed_y += self.gravity
 
     def update(self):
         self.rect.move_ip(self.speed_x, self.speed_y)
 
         if self.rect.left <= 0:
             self.rect.left = 0
-            self.speed_x = 0
         if self.rect.right >= SCREEN_WIDTH:
             self.rect.right = SCREEN_WIDTH
-            self.speed_x = 0
         if self.rect.top <= 0:
             self.rect.top = 0
         if self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
             self.jumping = False
-            self.speed_y = 0
+
 
         self.hitbox = pygame.Rect(self.rect.x + 10, self.rect.y + 10, self.rect.width - 20, self.rect.height -  20)
 
@@ -100,13 +116,17 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 screen.fill(pygame.Color('lightgrey'))
 clock = pygame.time.Clock()
 
-ADDENEMY = pygame.USEREVENT + 1
-pygame.time.set_timer(ADDENEMY, 250)
+ADDRAINDROP = pygame.USEREVENT + 1
+pygame.time.set_timer(ADDRAINDROP, 300)
 
 player = Player()
-enemies = pygame.sprite.Group()
+puddle = Puddle()
+raindrops = pygame.sprite.Group()
+obstacles = pygame.sprite.Group()
+obstacles.add(puddle)
 all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
+all_sprites.add(puddle)
 
 running = True
 while running:
@@ -115,15 +135,17 @@ while running:
             running = False
         elif event.type == KEYDOWN and event.key == K_ESCAPE:
             running = False
-        elif event.type == ADDENEMY:
-            new_enemy = Enemy()
-            enemies.add(new_enemy)
-            all_sprites.add(new_enemy)
+        elif event.type == ADDRAINDROP:
+            new_raindrop = Raindrop()
+            raindrops.add(new_raindrop)
+            all_sprites.add(new_raindrop)
+            obstacles.add(new_raindrop)
     pressed_keys = pygame.key.get_pressed()
 
     player.handle_keys(pressed_keys)
     player.update()
-    enemies.update()
+    puddle.update()
+    raindrops.update()
 
     screen.fill(pygame.Color('lightgrey'))
     for entity in all_sprites:
@@ -131,7 +153,7 @@ while running:
 
     pygame.display.flip()
 
-    if pygame.sprite.spritecollideany(player, enemies, hitbox_collision):
+    if pygame.sprite.spritecollideany(player, obstacles, hitbox_collision):
         time.sleep(2)
         player.kill()
         running = False
