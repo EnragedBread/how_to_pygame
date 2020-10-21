@@ -5,6 +5,9 @@ import pygame
 from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_w, K_s, K_a, K_d, K_SPACE, K_LEFT, K_RIGHT, RLEACCEL
 from pygame.math import Vector2
 
+#things I kind of wat to do
+#Background, highscore saving, powerup(protects from raindrops), start screen
+
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 
@@ -14,6 +17,22 @@ def hitbox_collision(player, entity):
     if (rect.x + rect.width) > hitbox[0] and rect.x < (hitbox[0] + hitbox[2]):
         if (rect.y + rect.height) > hitbox[1] and rect.y < (hitbox[1] + hitbox[3]):
             return True
+
+class Background():
+    def __init__(self, id):
+        self.image = pygame.image.load('mountain_background.png').convert()
+        self.id = id
+        self.rect = self.image.get_rect()
+        self.rect.x = self.id * self.rect.width
+        self.speed = -2
+
+    def render(self, screen):
+        screen.blit(self.image, self.rect)
+
+    def update(self):
+        self.rect.move_ip(self.speed, 0)
+        if self.rect.right <= 0:
+            self.rect.left = self.rect.width
 
 class HUD():
     def __init__(self):
@@ -59,7 +78,7 @@ class Puddle(pygame.sprite.Sprite):
         super().__init__()
 
         self.surf = pygame.Surface((60,20))
-        self.color = pygame.Color('navy')
+        self.color = pygame.Color('chocolate4')
         self.surf.fill(self.color)
         self.rect = self.surf.get_rect()
         self.rect.bottomleft = (SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -136,6 +155,8 @@ clock = pygame.time.Clock()
 ADDRAINDROP = pygame.USEREVENT + 1
 pygame.time.set_timer(ADDRAINDROP, 300)
 
+background0 = Background(0)
+background1 = Background(1)
 player = Player()
 puddle = Puddle()
 raindrops = pygame.sprite.Group()
@@ -165,8 +186,13 @@ while running:
     puddle.update()
     raindrops.update()
     hud.update()
+    background0.update()
+    background1.update()
 
     screen.fill(pygame.Color('lightgrey'))
+
+    background0.render(screen)
+    background1.render(screen)
     for entity in all_sprites:
         entity.render(screen)
     hud.render(screen)
