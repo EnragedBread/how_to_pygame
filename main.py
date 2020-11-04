@@ -10,7 +10,6 @@ from hud import HUD
 from lumber import Lumber
 from player import Player
 from raindrop import Raindrop
-from hitbox import Hitbox
 
 #things I kind of want to do
 #highscore saving, powerup(protects from raindrops), start screen
@@ -65,7 +64,7 @@ while running:
 
     pygame.display.flip()
 
-    if pygame.sprite.spritecollideany(player, obstacles, Hitbox.collision):
+    if pygame.sprite.spritecollideany(player.hitbox, obstacles):
         time.sleep(2)
         player.kill()
         running = False
