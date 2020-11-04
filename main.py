@@ -10,16 +10,10 @@ from hud import HUD
 from lumber import Lumber
 from player import Player
 from raindrop import Raindrop
+from hitbox import Hitbox
 
-#things I kind of wat to do
+#things I kind of want to do
 #highscore saving, powerup(protects from raindrops), start screen
-
-def hitbox_collision(player, entity):
-    hitbox = player.hitbox
-    rect = entity.rect
-    if (rect.x + rect.width) > hitbox[0] and rect.x < (hitbox[0] + hitbox[2]):
-        if (rect.y + rect.height) > hitbox[1] and rect.y < (hitbox[1] + hitbox[3]):
-            return True
 
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -71,7 +65,7 @@ while running:
 
     pygame.display.flip()
 
-    if pygame.sprite.spritecollideany(player, obstacles, hitbox_collision):
+    if pygame.sprite.spritecollideany(player, obstacles, Hitbox.collision):
         time.sleep(2)
         player.kill()
         running = False

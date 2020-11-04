@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import K_w, K_s, K_a, K_d, K_SPACE, K_LEFT, K_RIGHT, RLEACCEL
 
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from hitbox import Hitbox
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -18,7 +19,7 @@ class Player(pygame.sprite.Sprite):
         self.speed_y = 0
         self.jumping = False
         self.gravity = 5
-        self.hitbox = pygame.Rect(self.rect.x + 10, self.rect.y + 10, self.rect.width - 20, self.rect.height -  20)
+        self.hitbox = Hitbox(self)
 
     def render(self, screen):
         screen.blit(self.surf, self.rect)
@@ -49,4 +50,4 @@ class Player(pygame.sprite.Sprite):
             self.rect.bottom = SCREEN_HEIGHT
             self.jumping = False
 
-        self.hitbox = pygame.Rect(self.rect.x + 10, self.rect.y + 10, self.rect.width - 20, self.rect.height -  20)
+        self.hitbox.update()
