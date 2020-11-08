@@ -1,16 +1,16 @@
 import random
 
 import pygame
+from pygame.locals import RLEACCEL
 
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
+
 
 class Raindrop(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-
-        self.surf = pygame.Surface((20,20))
-        self.color = pygame.Color('blue')
-        self.surf.fill(self.color)
+        self.surf = pygame.image.load('raindrop.png').convert()
+        self.surf.set_colorkey(pygame.Color('white'), RLEACCEL)
         self.rect = self.surf.get_rect(
             center = (
                 random.randint(0, SCREEN_WIDTH),
