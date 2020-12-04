@@ -11,4 +11,4 @@ class Hitbox(pygame.sprite.Sprite):
         self.rect = pygame.Rect(player_rect.x + 10, player_rect.y + 10, player_rect.width - 20, player_rect.height -  20)
 
     def render(self, screen):
-        pass
+        pygame.draw.rect(screen, pygame.Color('yellow'), self.rect, 2)

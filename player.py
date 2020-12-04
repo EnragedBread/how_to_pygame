@@ -23,6 +23,7 @@ class Player(pygame.sprite.Sprite):
 
     def render(self, screen):
         screen.blit(self.surf, self.rect)
+        self.hitbox.render(screen)
 
     def handle_keys(self, keys):
         if keys[K_a] or keys[K_LEFT]:
