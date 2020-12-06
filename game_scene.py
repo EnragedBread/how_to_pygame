@@ -63,5 +63,5 @@ class GameScene(Scene):
         for background in self.backgrounds:
             background.update()
 
-        if pygame.sprite.spritecollideany(self.player.hitbox, self.obstacles):
+        if pygame.sprite.spritecollideany(self.player, self.obstacles, pygame.sprite.collide_mask):
             self.collision = True

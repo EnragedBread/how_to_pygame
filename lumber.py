@@ -13,6 +13,8 @@ class Lumber(pygame.sprite.Sprite):
         self.rect.bottomleft = (SCREEN_WIDTH, SCREEN_HEIGHT)
         self.speed = -5
 
+        self.mask = pygame.mask.from_surface(self.surf)
+
     def render(self, screen):
         screen.blit(self.surf, self.rect)
 

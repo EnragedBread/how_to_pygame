@@ -2,7 +2,6 @@ import pygame
 from pygame.locals import K_w, K_s, K_a, K_d, K_SPACE, K_LEFT, K_RIGHT, RLEACCEL
 
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
-from hitbox import Hitbox
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -19,11 +18,10 @@ class Player(pygame.sprite.Sprite):
         self.speed_y = 0
         self.jumping = False
         self.gravity = 5
-        self.hitbox = Hitbox(self)
+        self.mask = pygame.mask.from_surface(self.surf)
 
     def render(self, screen):
         screen.blit(self.surf, self.rect)
-        self.hitbox.render(screen)
 
     def handle_keys(self, keys):
         if keys[K_a] or keys[K_LEFT]:
@@ -50,5 +48,3 @@ class Player(pygame.sprite.Sprite):
         if self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
             self.jumping = False
-
-        self.hitbox.update()

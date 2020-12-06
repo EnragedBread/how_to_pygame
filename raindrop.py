@@ -19,6 +19,8 @@ class Raindrop(pygame.sprite.Sprite):
         )
         self.speed = random.randint(5, 10)
 
+        self.mask = pygame.mask.from_surface(self.surf)
+
     def render(self, screen):
         screen.blit(self.surf, self.rect)
 
